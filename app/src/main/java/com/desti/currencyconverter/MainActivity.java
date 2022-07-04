@@ -66,7 +66,7 @@ public class MainActivity extends AppCompatActivity {
                 // convert to desired currency
                 try {
                     OkHttpClient client = new OkHttpClient().newBuilder().build();
-                    String url = String.format("https://api.apilayer.com/fixer/convert?to=%s&from=%s&amount=%.5f", fromCurr, toCurr, value);
+                    String url = String.format("https://api.apilayer.com/fixer/convert?to=%s&from=%s&amount=%.5f", toCurr, fromCurr, value);
                     Request request = new Request.Builder()
                             .url(url)
                             .addHeader("apikey", "7RwUti3ZWUIJAcFfCK0YLHYRuPQFJXUK")

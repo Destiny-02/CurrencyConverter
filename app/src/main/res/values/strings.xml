@@ -7,10 +7,7 @@
         <item>NZD</item>
         <item>AUD</item>
         <item>USD</item>
-        <item>EUR</item>
-        <item>GBP</item>
         <item>JPY</item>
         <item>CNY</item>
-        <item>INR</item>
     </string-array>
 </resources>

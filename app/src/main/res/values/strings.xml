@@ -1,3 +1,9 @@
 <resources>
     <string name="app_name">Currency Converter</string>
+
+    <string-array name="currencies">
+        <item>AUD</item>
+        <item>NZD</item>
+        <item>USD</item>
+    </string-array>
 </resources>

@@ -39,6 +39,14 @@ public class MainActivity extends AppCompatActivity {
                 // convert
                 value++;
 
+                // add % fee
+                if (feeCheckBox.isChecked()) {
+                    String feeString = feeEditText.getText().toString();
+                    if (feeString.equals("")) feeString = "0";
+                    double feePercent = Double.parseDouble(feeString);
+                    value *= (1+feePercent/100);
+                }
+
                 value = (double) Math.round(value*100)/100;
                 valueString = Double.toString(value);
                 if (valueString.endsWith(".0")) valueString = valueString.substring(0, valueString.length()-2);

@@ -68,6 +68,7 @@
         android:layout_height="wrap_content"
         android:ems="10"
         android:inputType="numberDecimal"
+        android:visibility="invisible"
         app:layout_constraintBottom_toTopOf="@+id/convert_button"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintHorizontal_bias="0.5"

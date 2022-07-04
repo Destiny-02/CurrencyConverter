@@ -6,6 +6,7 @@ import android.os.Bundle;
 import android.view.View;
 import android.widget.Button;
 import android.widget.CheckBox;
+import android.widget.CompoundButton;
 import android.widget.EditText;
 import android.widget.Spinner;
 import android.widget.TextView;
@@ -28,6 +29,17 @@ public class MainActivity extends AppCompatActivity {
         feeCheckBox = findViewById(R.id.fee_checkbox);
         convertButton = findViewById(R.id.convert_button);
         resultTextView = findViewById(R.id.result_text_view);
+
+        feeCheckBox.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
+            @Override
+            public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
+                if (isChecked) {
+                    feeEditText.setVisibility(View.VISIBLE);
+                } else {
+                    feeEditText.setVisibility(View.INVISIBLE);
+                }
+            }
+        });
 
         convertButton.setOnClickListener(new View.OnClickListener() {
             @Override

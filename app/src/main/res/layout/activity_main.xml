@@ -29,7 +29,7 @@
             android:layout_height="wrap_content"
             android:layout_weight="1"
             android:contentDescription="right arrow"
-            app:srcCompat="@drawable/ic_baseline_arrow_forward" />
+            app:srcCompat="@drawable/baseline_arrow_forward" />
 
         <Spinner
             android:id="@+id/to_spinner"
@@ -55,7 +55,7 @@
         android:id="@+id/fee_checkbox"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:text="Add % fee"
+        android:text="@string/fee_checkbox"
         app:layout_constraintBottom_toTopOf="@+id/fee_text_view"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintHorizontal_bias="0.5"
@@ -79,7 +79,7 @@
         android:id="@+id/convert_button"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:text="Convert"
+        android:text="@string/convert_button"
         app:layout_constraintBottom_toTopOf="@+id/result_text_view"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintHorizontal_bias="0.5"

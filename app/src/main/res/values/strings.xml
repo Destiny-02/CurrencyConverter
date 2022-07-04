@@ -1,5 +1,7 @@
 <resources>
     <string name="app_name">Currency Converter</string>
+    <string name="fee_checkbox">Add % fee</string>
+    <string name="convert_button">Convert</string>
 
     <string-array name="currencies">
         <item>NZD</item>

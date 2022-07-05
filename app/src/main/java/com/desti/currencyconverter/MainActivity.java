@@ -79,8 +79,9 @@ public class MainActivity extends AppCompatActivity {
                     System.out.println(responseString);
                     JSONParser parser = new JSONParser();
                     JSONObject json = (JSONObject) parser.parse(responseString);
-                    double rate = (Double) json.get("result");
-                    value *= rate;
+                    String rate = json.get("result").toString();
+                    double rate_double = Double.parseDouble(rate);
+                    value *= rate_double;
                 } catch (Exception e) {
                     Toast.makeText(MainActivity.this, e.toString(), Toast.LENGTH_SHORT).show();
                     return;

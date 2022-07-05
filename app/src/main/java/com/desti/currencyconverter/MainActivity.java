@@ -20,8 +20,6 @@ import android.widget.Toast;
 import org.json.simple.JSONObject;
 import org.json.simple.parser.JSONParser;
 
-import java.util.List;
-
 import okhttp3.*;
 
 public class MainActivity extends AppCompatActivity {

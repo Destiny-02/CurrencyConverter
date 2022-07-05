@@ -23,17 +23,26 @@ import okhttp3.Response;
 public class CustomiseActivity extends AppCompatActivity {
     private RecyclerView recyclerView;
     private CurrencyListAdapter currencyListAdapter;
+    private List<CurrencyModel> currencyModelList;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+        Bundle extras = getIntent().getExtras();
+        String[] dropdownOptions;
+        if (extras != null) {
+            dropdownOptions = extras.getStringArray("dropdown");
+        } else {
+            dropdownOptions = new String[] {};
+        }
+        currencyModelList = currencyStringToModel(dropdownOptions);
         setContentView(R.layout.activity_customise);
         getSupportActionBar().setDisplayHomeAsUpEnabled(true);
         getSupportActionBar().setDisplayShowHomeEnabled(true);
 
         View v = findViewById(android.R.id.content).getRootView();
         recyclerView = v.findViewById(R.id.currency_recycler_view);
-        currencyListAdapter = new CurrencyListAdapter(getCurrencyList());
+        currencyListAdapter = new CurrencyListAdapter(currencyModelList);
         recyclerView.setAdapter(currencyListAdapter);
         recyclerView.setLayoutManager(new LinearLayoutManager(this));
         recyclerView.addItemDecoration(new DividerItemDecoration(this,
@@ -70,5 +79,13 @@ public class CustomiseActivity extends AppCompatActivity {
     public boolean onSupportNavigateUp() {
         onBackPressed();
         return true;
+    }
+
+    public List<CurrencyModel> currencyStringToModel(String[] currencyStrings) {
+        List<CurrencyModel> currencyModels = new ArrayList<>();
+        for (String s : currencyStrings) {
+            currencyModels.add(new CurrencyModel(s, false));
+        }
+        return currencyModels;
     }
 }

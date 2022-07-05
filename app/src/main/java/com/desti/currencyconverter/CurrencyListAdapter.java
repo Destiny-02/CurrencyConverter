@@ -4,7 +4,7 @@ package com.desti.currencyconverter;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.TextView;
+import android.widget.CheckBox;
 
 import androidx.recyclerview.widget.RecyclerView;
 
@@ -17,17 +17,20 @@ public class CurrencyListAdapter extends RecyclerView.Adapter<CurrencyListAdapte
      * (custom ViewHolder).
      */
     public static class ViewHolder extends RecyclerView.ViewHolder {
-        private final TextView textView;
+        private final CheckBox checkBox;
 
         public ViewHolder(View view) {
             super(view);
-            // Define click listener for the ViewHolder's View
-
-            textView = (TextView) view.findViewById(R.id.currency_c_text_view);
+            checkBox = (CheckBox) view.findViewById(R.id.currency_checkbox);
+            checkBox.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View view) {
+                }
+            });
         }
 
-        public TextView getTextView() {
-            return textView;
+        public CheckBox getCheckBox() {
+            return checkBox;
         }
     }
 
@@ -57,7 +60,7 @@ public class CurrencyListAdapter extends RecyclerView.Adapter<CurrencyListAdapte
 
         // Get element from your dataset at this position and replace the
         // contents of the view with that element
-        viewHolder.getTextView().setText(localDataSet[position]);
+        viewHolder.getCheckBox().setText(localDataSet[position]);
     }
 
     // Return the size of your dataset (invoked by the layout manager)

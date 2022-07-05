@@ -69,17 +69,18 @@ public class MainActivity extends AppCompatActivity {
                 // convert to desired currency
                 try {
                     OkHttpClient client = new OkHttpClient().newBuilder().build();
-                    String url = String.format("https://api.apilayer.com/fixer/convert?to=%s&from=%s&amount=%.5f", toCurr, fromCurr, value);
+                    String url = String.format("https://api.exchangerate.host/convert?from=%s&to=%s", fromCurr, toCurr, value);
                     Request request = new Request.Builder()
                             .url(url)
-                            .addHeader("apikey", "7RwUti3ZWUIJAcFfCK0YLHYRuPQFJXUK")
-                            .method("GET", null)
+                            .get()
                             .build();
                     Response response = client.newCall(request).execute();
                     String responseString = response.body().string();
+                    System.out.println(responseString);
                     JSONParser parser = new JSONParser();
                     JSONObject json = (JSONObject) parser.parse(responseString);
-                    value = (Double) json.get("result");
+                    double rate = (Double) json.get("result");
+                    value *= rate;
                 } catch (Exception e) {
                     Toast.makeText(MainActivity.this, e.toString(), Toast.LENGTH_SHORT).show();
                     return;

@@ -8,6 +8,7 @@ import android.os.StrictMode;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
+import android.widget.ArrayAdapter;
 import android.widget.Button;
 import android.widget.CheckBox;
 import android.widget.CompoundButton;
@@ -19,6 +20,8 @@ import android.widget.Toast;
 import org.json.simple.JSONObject;
 import org.json.simple.parser.JSONParser;
 
+import java.util.List;
+
 import okhttp3.*;
 
 public class MainActivity extends AppCompatActivity {
@@ -27,6 +30,7 @@ public class MainActivity extends AppCompatActivity {
     private CheckBox feeCheckBox;
     private Button convertButton;
     private TextView resultTextView;
+    private String[] dropdownOptions;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -43,6 +47,16 @@ public class MainActivity extends AppCompatActivity {
         feeCheckBox = findViewById(R.id.fee_checkbox);
         convertButton = findViewById(R.id.convert_button);
         resultTextView = findViewById(R.id.result_text_view);
+
+        dropdownOptions = getResources().getStringArray(R.array.default_currencies);
+
+        ArrayAdapter<String> fromAdapter = new ArrayAdapter<String>(this, android.R.layout.simple_spinner_item, dropdownOptions);
+        fromAdapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
+        fromSpinner.setAdapter(fromAdapter);
+
+        ArrayAdapter<String> toAdapter = new ArrayAdapter<String>(this, android.R.layout.simple_spinner_item, dropdownOptions);
+        toAdapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
+        toSpinner.setAdapter(toAdapter);
 
         feeCheckBox.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
             @Override
@@ -114,8 +128,10 @@ public class MainActivity extends AppCompatActivity {
     public boolean onOptionsItemSelected(MenuItem item) {
         switch (item.getItemId()) {
             case R.id.customise:
-                startActivity(new Intent(MainActivity.this ,
-                        CustomiseActivity.class));
+                Intent intent = new Intent(MainActivity.this ,
+                        CustomiseActivity.class);
+                intent.putExtra("dropdown", dropdownOptions);
+                startActivity(intent);
                 return true;
             default:
                 return super.onOptionsItemSelected(item);

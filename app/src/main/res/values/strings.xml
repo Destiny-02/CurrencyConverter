@@ -4,7 +4,7 @@
     <string name="fee_checkbox">Add % fee</string>
     <string name="convert_button">Convert</string>
 
-    <string-array name="currencies">
+    <string-array name="default_currencies">
         <item>NZD</item>
         <item>AUD</item>
         <item>USD</item>

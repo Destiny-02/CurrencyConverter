@@ -2,6 +2,7 @@ package com.desti.currencyconverter;
 
 import androidx.appcompat.app.AppCompatActivity;
 
+import android.content.Intent;
 import android.os.Bundle;
 import android.os.StrictMode;
 import android.view.Menu;
@@ -111,7 +112,8 @@ public class MainActivity extends AppCompatActivity {
     public boolean onOptionsItemSelected(MenuItem item) {
         switch (item.getItemId()) {
             case R.id.customise:
-                //doSomething();
+                startActivity(new Intent(MainActivity.this ,
+                        CustomiseActivity.class));
                 return true;
             default:
                 return super.onOptionsItemSelected(item);

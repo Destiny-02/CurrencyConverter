@@ -3,6 +3,8 @@ package com.desti.currencyconverter;
 import android.content.SharedPreferences;
 import android.os.Bundle;
 import android.preference.PreferenceManager;
+import android.view.Menu;
+import android.view.MenuItem;
 import android.view.View;
 import android.widget.Toast;
 
@@ -118,5 +120,22 @@ public class CustomiseActivity extends AppCompatActivity {
         SharedPreferences.Editor editor = prefs.edit();
         editor.putString("com.desti.currencyconverter.dropdownoptions", selectedStrings);
         editor.apply();
+    }
+
+    @Override
+    public boolean onCreateOptionsMenu(Menu menu) {
+        getMenuInflater().inflate(R.menu.customise_menu, menu);
+        return true;
+    }
+
+    @Override
+    public boolean onOptionsItemSelected(MenuItem item) {
+        switch (item.getItemId()) {
+            case R.id.deselect:
+                // TODO:
+                return true;
+            default:
+                return super.onOptionsItemSelected(item);
+        }
     }
 }

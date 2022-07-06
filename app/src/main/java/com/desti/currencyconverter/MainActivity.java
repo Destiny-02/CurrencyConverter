@@ -2,7 +2,6 @@ package com.desti.currencyconverter;
 
 import androidx.appcompat.app.AppCompatActivity;
 
-import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.os.Bundle;
@@ -22,8 +21,6 @@ import android.widget.Toast;
 
 import org.json.simple.JSONObject;
 import org.json.simple.parser.JSONParser;
-
-import java.util.Set;
 
 import okhttp3.*;
 
@@ -114,7 +111,7 @@ public class MainActivity extends AppCompatActivity {
 
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
-        getMenuInflater().inflate(R.menu.menu, menu);
+        getMenuInflater().inflate(R.menu.main_menu, menu);
         return true;
     }
 

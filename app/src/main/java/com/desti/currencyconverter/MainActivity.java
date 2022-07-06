@@ -20,10 +20,13 @@ import android.widget.Spinner;
 import android.widget.TextView;
 import android.widget.Toast;
 
-import org.json.simple.JSONObject;
-import org.json.simple.parser.JSONParser;
+import org.json.JSONObject;
 
+import java.text.SimpleDateFormat;
 import java.util.Arrays;
+import java.util.Calendar;
+import java.util.Date;
+import java.util.Iterator;
 import java.util.List;
 
 import okhttp3.*;
@@ -80,20 +83,57 @@ public class MainActivity extends AppCompatActivity {
                 // convert to desired currency
                 try {
                     OkHttpClient client = new OkHttpClient().newBuilder().build();
-                    String url = String.format("https://api.exchangerate.host/convert?from=%s&to=%s&amount=%.2f", fromCurr, toCurr, value);
+                    String url;
+
+                    if (monthCheckBox.isChecked()){
+                        Calendar calendar = Calendar.getInstance();
+                        Date todayDate = calendar.getTime();
+                        calendar.add(Calendar.MONTH, -1);
+                        Date oneMonthAgoDate = calendar.getTime();
+                        SimpleDateFormat format = new SimpleDateFormat("yyyy-MM-dd");
+                        String today = format.format(todayDate);
+                        String oneMonthAgo = format.format(oneMonthAgoDate);
+                        url = String.format("https://api.exchangerate.host/timeseries?start_date=%s&end_date=%s&base=%s&symbols=%s&amount=%.2f", oneMonthAgo, today, fromCurr, toCurr, value);
+                    } else {
+                        url = String.format("https://api.exchangerate.host/convert?from=%s&to=%s&amount=%.2f", fromCurr, toCurr, value);
+                    }
+
                     Request request = new Request.Builder()
                             .url(url)
                             .get()
                             .build();
                     Response response = client.newCall(request).execute();
                     String responseString = response.body().string();
-                    JSONParser parser = new JSONParser();
-                    JSONObject json = (JSONObject) parser.parse(responseString);
-                    if (json.get("result") == null) {
-                        value = 0;
+                    JSONObject json = new JSONObject(responseString);
+                    if (monthCheckBox.isChecked()) {
+                        Double sum = 0.0;
+                        int count = 0;
+                        JSONObject jsonRates = json.getJSONObject("rates");
+                        String key;
+                        Double rate = 0.0;
+                        for (Iterator<String> it = jsonRates.keys(); it.hasNext(); ) {
+                            key = it.next();
+                            if (jsonRates.getJSONObject(key).has(toCurr) && jsonRates.getJSONObject(key).get(toCurr) != JSONObject.NULL) {
+                                rate = (Double) jsonRates.getJSONObject(key).get(toCurr);
+                                sum += (Double) rate;
+                                count++;
+                            }
+                        }
+                        if (count != 0) {
+                            value = (sum / count);
+                        } else {
+                            value = 0;
+                        }
+
                     } else {
-                        value = (double) json.get("result");
+                        Object rate = json.get("result");
+                        if (JSONObject.NULL.equals(rate)) {
+                            value = 0;
+                        } else {
+                            value = (double) rate;
+                        }
                     }
+
                 } catch (Exception e) {
                     Toast.makeText(MainActivity.this, e.toString(), Toast.LENGTH_SHORT).show();
                     return;

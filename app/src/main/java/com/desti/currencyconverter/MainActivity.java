@@ -122,7 +122,6 @@ public class MainActivity extends AppCompatActivity {
                 Intent intent = new Intent(MainActivity.this ,
                         CustomiseActivity.class);
                 intent.putExtra("dropdown", dropdownOptions);
-                // TODO: find alternative
                 startActivityForResult(intent, 1);
                 return true;
             default:
@@ -133,10 +132,9 @@ public class MainActivity extends AppCompatActivity {
     @Override
     public void onActivityResult(int requestCode, int resultCode, Intent data) {
         super.onActivityResult(requestCode, resultCode, data);
+        // TODO: fix resultCode != RESULT_OK (0)
         if (requestCode == 1) {
-            if(resultCode == RESULT_OK) {
-                setSpinners();
-            }
+            setSpinners();
         }
     }
 

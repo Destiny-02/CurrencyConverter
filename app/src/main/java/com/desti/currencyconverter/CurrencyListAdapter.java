@@ -13,7 +13,7 @@ public class CurrencyListAdapter extends RecyclerView.Adapter<CurrencyListAdapte
 
     private List<CurrencyModel> currencyModelList;
 
-    public static class ViewHolder extends RecyclerView.ViewHolder {
+    public class ViewHolder extends RecyclerView.ViewHolder {
         private final CheckBox checkBox;
 
         public ViewHolder(View view) {
@@ -22,6 +22,8 @@ public class CurrencyListAdapter extends RecyclerView.Adapter<CurrencyListAdapte
             checkBox.setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View view) {
+                    CurrencyModel updatedCM = new CurrencyModel(checkBox.getText().toString(), checkBox.isChecked());
+                    currencyModelList.set(getAdapterPosition(), updatedCM);
                 }
             });
         }

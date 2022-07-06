@@ -10,6 +10,7 @@ import android.preference.PreferenceManager;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
+import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
 import android.widget.Button;
 import android.widget.CheckBox;
@@ -21,6 +22,9 @@ import android.widget.Toast;
 
 import org.json.simple.JSONObject;
 import org.json.simple.parser.JSONParser;
+
+import java.util.Arrays;
+import java.util.List;
 
 import okhttp3.*;
 
@@ -106,6 +110,36 @@ public class MainActivity extends AppCompatActivity {
                 resultTextView.setText(valueString);
             }
         });
+
+        fromSpinner.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
+            @Override
+            public void onItemSelected(AdapterView<?> adapterView, View view, int i, long l) {
+                SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(fromSpinner.getContext());
+                SharedPreferences.Editor editor = prefs.edit();
+                editor.putString("com.desti.currencyconverter.from", fromSpinner.getSelectedItem().toString());
+                editor.apply();
+            }
+
+            @Override
+            public void onNothingSelected(AdapterView<?> adapterView) {
+
+            }
+        });
+
+        toSpinner.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
+            @Override
+            public void onItemSelected(AdapterView<?> adapterView, View view, int i, long l) {
+                SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(toSpinner.getContext());
+                SharedPreferences.Editor editor = prefs.edit();
+                editor.putString("com.desti.currencyconverter.to", toSpinner.getSelectedItem().toString());
+                editor.apply();
+            }
+
+            @Override
+            public void onNothingSelected(AdapterView<?> adapterView) {
+
+            }
+        });
     }
 
     @Override
@@ -154,8 +188,27 @@ public class MainActivity extends AppCompatActivity {
         toAdapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
         toSpinner.setAdapter(toAdapter);
 
-        if (dropdownOptions.length > 1) {
+        String fromPref = prefs.getString("com.desti.currencyconverter.from", "empty");
+        String toPref = prefs.getString("com.desti.currencyconverter.to", "empty");
+
+        if (dropdownOptions.length > 1 && (fromPref.equals("empty") && toPref.equals("empty"))) {
             toSpinner.setSelection(1);
+        } else {
+            List<String> dropdownList = Arrays.asList(dropdownOptions);
+            int fromIndex = dropdownList.lastIndexOf(fromPref);
+            int toIndex = dropdownList.lastIndexOf(toPref);
+
+            if ( fromIndex != -1) {
+                fromSpinner.setSelection(fromIndex);
+            } else {
+                fromSpinner.setSelection(0);
+            }
+
+            if ( toIndex != -1) {
+                toSpinner.setSelection(toIndex);
+            } else {
+                toSpinner.setSelection(0);
+            }
         }
     }
 

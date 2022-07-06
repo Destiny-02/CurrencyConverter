@@ -81,7 +81,6 @@ public class MainActivity extends AppCompatActivity {
                             .build();
                     Response response = client.newCall(request).execute();
                     String responseString = response.body().string();
-                    System.out.println(responseString);
                     JSONParser parser = new JSONParser();
                     JSONObject json = (JSONObject) parser.parse(responseString);
                     String rate = json.get("result").toString();

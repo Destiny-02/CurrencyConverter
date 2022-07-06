@@ -32,6 +32,7 @@ public class MainActivity extends AppCompatActivity {
     private Spinner fromSpinner, toSpinner;
     private EditText valueEditText, feeEditText;
     private CheckBox feeCheckBox;
+    private CheckBox monthCheckBox;
     private Button convertButton;
     private TextView resultTextView;
     private String[] dropdownOptions;
@@ -49,6 +50,7 @@ public class MainActivity extends AppCompatActivity {
         valueEditText = findViewById(R.id.value_edit_text);
         feeEditText = findViewById(R.id.fee_text_view);
         feeCheckBox = findViewById(R.id.fee_checkbox);
+        monthCheckBox = findViewById(R.id.month_checkbox);
         convertButton = findViewById(R.id.convert_button);
         resultTextView = findViewById(R.id.result_text_view);
         setSpinners();
@@ -171,6 +173,7 @@ public class MainActivity extends AppCompatActivity {
         }
     }
 
+    // TODO: monthly average
     private void setSpinners() {
         SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(this);
         String prefsString = prefs.getString("com.desti.currencyconverter.dropdownoptions", "empty");

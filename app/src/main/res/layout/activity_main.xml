@@ -68,11 +68,22 @@
         android:ems="10"
         android:inputType="numberDecimal"
         android:visibility="invisible"
-        app:layout_constraintBottom_toTopOf="@+id/convert_button"
+        app:layout_constraintBottom_toTopOf="@+id/month_checkbox"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintHorizontal_bias="0.5"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@+id/fee_checkbox" />
+
+    <CheckBox
+        android:id="@+id/month_checkbox"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="@string/month_checkbox"
+        app:layout_constraintBottom_toTopOf="@+id/convert_button"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintHorizontal_bias="0.5"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/fee_text_view" />
 
     <Button
         android:id="@+id/convert_button"

@@ -80,7 +80,7 @@ public class MainActivity extends AppCompatActivity {
                 // convert to desired currency
                 try {
                     OkHttpClient client = new OkHttpClient().newBuilder().build();
-                    String url = String.format("https://api.exchangerate.host/convert?from=%s&to=%s", fromCurr, toCurr, value);
+                    String url = String.format("https://api.exchangerate.host/convert?from=%s&to=%s&amount=%.2f", fromCurr, toCurr, value);
                     Request request = new Request.Builder()
                             .url(url)
                             .get()
@@ -89,9 +89,11 @@ public class MainActivity extends AppCompatActivity {
                     String responseString = response.body().string();
                     JSONParser parser = new JSONParser();
                     JSONObject json = (JSONObject) parser.parse(responseString);
-                    String rate = json.get("result").toString();
-                    double rate_double = Double.parseDouble(rate);
-                    value *= rate_double;
+                    if (json.get("result") == null) {
+                        value = 0;
+                    } else {
+                        value = (double) json.get("result");
+                    }
                 } catch (Exception e) {
                     Toast.makeText(MainActivity.this, e.toString(), Toast.LENGTH_SHORT).show();
                     return;
@@ -173,7 +175,6 @@ public class MainActivity extends AppCompatActivity {
         }
     }
 
-    // TODO: monthly average
     private void setSpinners() {
         SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(this);
         String prefsString = prefs.getString("com.desti.currencyconverter.dropdownoptions", "empty");

@@ -132,10 +132,21 @@ public class CustomiseActivity extends AppCompatActivity {
     public boolean onOptionsItemSelected(MenuItem item) {
         switch (item.getItemId()) {
             case R.id.deselect:
-                // TODO:
+                deselectAll();
                 return true;
             default:
                 return super.onOptionsItemSelected(item);
         }
+    }
+
+    public void deselectAll() {
+        for (int i=0; i<currencyModelList.size(); i++) {
+            if (currencyModelList.get(i).isChecked()) {
+                CurrencyModel updated = currencyModelList.get(i);
+                updated.setChecked(false);
+                currencyModelList.set(i, updated);
+            }
+        }
+        currencyListAdapter.notifyDataSetChanged();
     }
 }

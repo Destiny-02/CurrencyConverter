@@ -29,7 +29,7 @@ public class CurrencyListAdapter extends RecyclerView.Adapter<CurrencyListAdapte
                     // CurrencyModel updatedCM = new CurrencyModel(compoundButton.getText().toString(), isChecked);
                     // filteredList.set(getAdapterPosition(), updatedCM);
                     for (CurrencyModel cm : currencyModelList) {
-                        if (cm.getCurrency().equals(compoundButton.getText().toString())) {
+                        if ((cm.getCurrency() + " - " + cm.getDescription()).equals(compoundButton.getText().toString())) {
                             cm.setChecked(isChecked);
                         }
                     }
@@ -57,7 +57,7 @@ public class CurrencyListAdapter extends RecyclerView.Adapter<CurrencyListAdapte
     @Override
     public void onBindViewHolder(ViewHolder viewHolder, final int position) {
         final CurrencyModel item = filteredList.get(position);
-        viewHolder.getCheckBox().setText(item.getCurrency());
+        viewHolder.getCheckBox().setText(item.getCurrency() + " - " + item.getDescription());
         viewHolder.getCheckBox().setChecked(item.isChecked());
     }
 
@@ -70,7 +70,7 @@ public class CurrencyListAdapter extends RecyclerView.Adapter<CurrencyListAdapte
         filteredList = new ArrayList<>();
 
         for (CurrencyModel cm : currencyModelList) {
-            if (cm.getCurrency().toLowerCase().contains(text.toLowerCase())) {
+            if (cm.getCurrency().toLowerCase().contains(text.toLowerCase()) || cm.getDescription().toLowerCase().contains(text.toLowerCase())) {
                 filteredList.add(cm);
             }
         }

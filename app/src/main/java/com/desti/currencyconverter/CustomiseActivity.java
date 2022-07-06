@@ -71,10 +71,11 @@ public class CustomiseActivity extends AppCompatActivity {
             for (Iterator<String> it = json.keys(); it.hasNext(); ) {
                 key = it.next();
                 boolean isChecked = false;
+                String description = json.getJSONObject(key).getString("description");
                 if (dropdownOptions.contains(key)) {
                     isChecked = true;
                 }
-                currencyModelList.add(new CurrencyModel(key, isChecked));
+                currencyModelList.add(new CurrencyModel(key, description, isChecked));
             }
         } catch (Exception e) {
             Toast.makeText(CustomiseActivity.this, e.toString(), Toast.LENGTH_SHORT).show();
@@ -86,14 +87,6 @@ public class CustomiseActivity extends AppCompatActivity {
     public boolean onSupportNavigateUp() {
         onBackPressed();
         return true;
-    }
-
-    public List<CurrencyModel> currencyStringsToModels(String[] currencyStrings) {
-        List<CurrencyModel> currencyModels = new ArrayList<>();
-        for (String s : currencyStrings) {
-            currencyModels.add(new CurrencyModel(s, false));
-        }
-        return currencyModels;
     }
 
     public String[] currencyModelsToStrings(List<CurrencyModel> currencyModels) {

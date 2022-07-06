@@ -3,9 +3,11 @@ package com.desti.currencyconverter;
 public class CurrencyModel {
     private String currency;
     private boolean isChecked;
+    private String description;
 
-    public CurrencyModel(String currency, boolean isChecked) {
+    public CurrencyModel(String currency, String description, boolean isChecked) {
         this.currency = currency;
+        this.description = description;
         this.isChecked = isChecked;
     }
 
@@ -23,5 +25,13 @@ public class CurrencyModel {
 
     public void setChecked(boolean checked) {
         isChecked = checked;
+    }
+
+    public String getDescription() {
+        return description;
+    }
+
+    public void setDescription(String description) {
+        this.description = description;
     }
 }

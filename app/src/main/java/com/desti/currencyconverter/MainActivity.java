@@ -105,6 +105,8 @@ public class MainActivity extends AppCompatActivity {
                     Response response = client.newCall(request).execute();
                     String responseString = response.body().string();
                     JSONObject json = new JSONObject(responseString);
+
+                    // find the monthly average rate and amount
                     if (monthCheckBox.isChecked()) {
                         Double sum = 0.0;
                         int count = 0;
@@ -124,7 +126,7 @@ public class MainActivity extends AppCompatActivity {
                         } else {
                             value = 0;
                         }
-
+                    // find today's rate and amount
                     } else {
                         Object rate = json.get("result");
                         if (JSONObject.NULL.equals(rate)) {

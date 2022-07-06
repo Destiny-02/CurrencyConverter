@@ -153,6 +153,10 @@ public class MainActivity extends AppCompatActivity {
         ArrayAdapter<String> toAdapter = new ArrayAdapter<String>(this, android.R.layout.simple_spinner_item, dropdownOptions);
         toAdapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
         toSpinner.setAdapter(toAdapter);
+
+        if (dropdownOptions.length > 1) {
+            toSpinner.setSelection(1);
+        }
     }
 
     public String[] stringToArray(String s) {

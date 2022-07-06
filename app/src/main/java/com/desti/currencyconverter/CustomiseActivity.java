@@ -1,6 +1,8 @@
 package com.desti.currencyconverter;
 
+import android.content.SharedPreferences;
 import android.os.Bundle;
+import android.preference.PreferenceManager;
 import android.view.View;
 import android.widget.Toast;
 
@@ -92,10 +94,29 @@ public class CustomiseActivity extends AppCompatActivity {
     }
 
     public String[] currencyModelsToStrings(List<CurrencyModel> currencyModels) {
-        String[] currencyStrings = new String[currencyModels.size()];
-        for (int i=0; i<currencyModels.size(); i++) {
-            currencyStrings[i] = currencyModels.get(i).getCurrency();
+        List<String> currencyStringList = new ArrayList<>();
+        for (CurrencyModel cm : currencyModels) {
+            if (cm.isChecked()) {
+                currencyStringList.add(cm.getCurrency());
+            }
         }
+
+        String[] currencyStrings = currencyStringList.toArray(new String[currencyStringList.size()]);
         return currencyStrings;
+    }
+
+    @Override
+    public void onBackPressed() {
+        savePreferences();
+        super.onBackPressed();
+    }
+
+    private void savePreferences() {
+        String[] selectedStringArray = currencyModelsToStrings(currencyModelList);
+        String selectedStrings = MainActivity.arrayToString(selectedStringArray);
+        SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(this);
+        SharedPreferences.Editor editor = prefs.edit();
+        editor.putString("com.desti.currencyconverter.dropdownoptions", selectedStrings);
+        editor.apply();
     }
 }

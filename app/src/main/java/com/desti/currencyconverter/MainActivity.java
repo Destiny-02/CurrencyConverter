@@ -2,9 +2,12 @@ package com.desti.currencyconverter;
 
 import androidx.appcompat.app.AppCompatActivity;
 
+import android.content.Context;
 import android.content.Intent;
+import android.content.SharedPreferences;
 import android.os.Bundle;
 import android.os.StrictMode;
+import android.preference.PreferenceManager;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
@@ -19,6 +22,8 @@ import android.widget.Toast;
 
 import org.json.simple.JSONObject;
 import org.json.simple.parser.JSONParser;
+
+import java.util.Set;
 
 import okhttp3.*;
 
@@ -45,16 +50,7 @@ public class MainActivity extends AppCompatActivity {
         feeCheckBox = findViewById(R.id.fee_checkbox);
         convertButton = findViewById(R.id.convert_button);
         resultTextView = findViewById(R.id.result_text_view);
-
-        dropdownOptions = getResources().getStringArray(R.array.default_currencies);
-
-        ArrayAdapter<String> fromAdapter = new ArrayAdapter<String>(this, android.R.layout.simple_spinner_item, dropdownOptions);
-        fromAdapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
-        fromSpinner.setAdapter(fromAdapter);
-
-        ArrayAdapter<String> toAdapter = new ArrayAdapter<String>(this, android.R.layout.simple_spinner_item, dropdownOptions);
-        toAdapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
-        toSpinner.setAdapter(toAdapter);
+        setSpinners();
 
         feeCheckBox.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
             @Override
@@ -129,10 +125,51 @@ public class MainActivity extends AppCompatActivity {
                 Intent intent = new Intent(MainActivity.this ,
                         CustomiseActivity.class);
                 intent.putExtra("dropdown", dropdownOptions);
-                startActivity(intent);
+                // TODO: find alternative
+                startActivityForResult(intent, 1);
                 return true;
             default:
                 return super.onOptionsItemSelected(item);
         }
+    }
+
+    @Override
+    public void onActivityResult(int requestCode, int resultCode, Intent data) {
+        super.onActivityResult(requestCode, resultCode, data);
+        if (requestCode == 1) {
+            if(resultCode == RESULT_OK) {
+                setSpinners();
+            }
+        }
+    }
+
+    private void setSpinners() {
+        SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(this);
+        String prefsString = prefs.getString("com.desti.currencyconverter.dropdownoptions", "empty");
+        if (prefsString.equals("empty")) {
+            dropdownOptions = getResources().getStringArray(R.array.default_currencies);
+        } else {
+            dropdownOptions = stringToArray(prefsString);
+        }
+
+        ArrayAdapter<String> fromAdapter = new ArrayAdapter<String>(this, android.R.layout.simple_spinner_item, dropdownOptions);
+        fromAdapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
+        fromSpinner.setAdapter(fromAdapter);
+
+        ArrayAdapter<String> toAdapter = new ArrayAdapter<String>(this, android.R.layout.simple_spinner_item, dropdownOptions);
+        toAdapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
+        toSpinner.setAdapter(toAdapter);
+    }
+
+    public String[] stringToArray(String s) {
+        return s.split(",");
+    }
+
+    public static String arrayToString(String[] sa) {
+        StringBuilder sb = new StringBuilder();
+        for (int i = 0; i < sa.length; i++) {
+            sb.append(sa[i]).append(",");
+        }
+        return sb.toString();
     }
 }

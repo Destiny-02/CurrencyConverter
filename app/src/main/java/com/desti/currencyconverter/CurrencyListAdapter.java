@@ -1,6 +1,7 @@
 package com.desti.currencyconverter;
 
 
+import android.content.Intent;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -12,7 +13,8 @@ import java.util.List;
 
 public class CurrencyListAdapter extends RecyclerView.Adapter<CurrencyListAdapter.ViewHolder> {
 
-    private List<CurrencyModel> currencyModelList;
+    // TODO: check if static is ok
+    private static List<CurrencyModel> currencyModelList;
 
     public static class ViewHolder extends RecyclerView.ViewHolder {
         private final CheckBox checkBox;
@@ -23,6 +25,9 @@ public class CurrencyListAdapter extends RecyclerView.Adapter<CurrencyListAdapte
             checkBox.setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View view) {
+                    CurrencyModel m = currencyModelList.get(getAdapterPosition());
+                    m.setChecked(checkBox.isChecked());
+                    currencyModelList.set(getAdapterPosition(), m);
                 }
             });
         }

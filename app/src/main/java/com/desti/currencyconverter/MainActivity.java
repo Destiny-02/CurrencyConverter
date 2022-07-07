@@ -16,7 +16,9 @@ import android.widget.Button;
 import android.widget.CheckBox;
 import android.widget.CompoundButton;
 import android.widget.EditText;
+import android.widget.LinearLayout;
 import android.widget.Spinner;
+import android.widget.Switch;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -40,7 +42,10 @@ public class MainActivity extends AppCompatActivity {
     private CheckBox monthCheckBox;
     private Button convertButton;
     private TextView resultTextView;
+    private Switch customRateSwitch;
     private String[] dropdownOptions;
+    private LinearLayout currencyLayout;
+    private EditText customRateEditText;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -58,8 +63,26 @@ public class MainActivity extends AppCompatActivity {
         monthCheckBox = findViewById(R.id.month_checkbox);
         convertButton = findViewById(R.id.convert_button);
         resultTextView = findViewById(R.id.result_text_view);
+        customRateSwitch = findViewById(R.id.custom_rate_switch);
+        currencyLayout = findViewById(R.id.currency_layout);
+        customRateEditText = findViewById(R.id.custom_rate_edit_text);
         setSpinners();
         setFee();
+
+        customRateSwitch.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
+            @Override
+            public void onCheckedChanged(CompoundButton compoundButton, boolean isChecked) {
+                if (isChecked) {
+                    currencyLayout.setVisibility(View.INVISIBLE);
+                    customRateEditText.setVisibility(View.VISIBLE);
+                    monthCheckBox.setVisibility(View.INVISIBLE);
+                } else {
+                    currencyLayout.setVisibility(View.VISIBLE);
+                    customRateEditText.setVisibility(View.INVISIBLE);
+                    monthCheckBox.setVisibility(View.VISIBLE);
+                }
+            }
+        });
 
         feeCheckBox.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
             @Override
@@ -75,76 +98,80 @@ public class MainActivity extends AppCompatActivity {
         convertButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                // collect information required for conversion
+                // collect value to be converted
                 String valueString = valueEditText.getText().toString();
                 if (valueString.equals("")) valueString = "0";
                 double value = Double.parseDouble(valueString);
 
-                String fromCurr = fromSpinner.getSelectedItem().toString();
-                String toCurr = toSpinner.getSelectedItem().toString();
+                // handle custom conversion
+                if (customRateSwitch.isChecked()) {
+                    value *= Double.parseDouble(customRateEditText.getText().toString());
+                } else {
+                    // convert to desired currency
+                    String fromCurr = fromSpinner.getSelectedItem().toString();
+                    String toCurr = toSpinner.getSelectedItem().toString();
+                    try {
+                        OkHttpClient client = new OkHttpClient().newBuilder().build();
+                        String url;
 
-                // convert to desired currency
-                try {
-                    OkHttpClient client = new OkHttpClient().newBuilder().build();
-                    String url;
+                        if (monthCheckBox.isChecked()){
+                            Calendar calendar = Calendar.getInstance();
+                            Date todayDate = calendar.getTime();
+                            calendar.add(Calendar.MONTH, -1);
+                            Date oneMonthAgoDate = calendar.getTime();
+                            SimpleDateFormat format = new SimpleDateFormat("yyyy-MM-dd");
+                            String today = format.format(todayDate);
+                            String oneMonthAgo = format.format(oneMonthAgoDate);
+                            url = String.format("https://api.exchangerate.host/timeseries?start_date=%s&end_date=%s&base=%s&symbols=%s&amount=%.2f", oneMonthAgo, today, fromCurr, toCurr, value);
+                        } else {
+                            url = String.format("https://api.exchangerate.host/convert?from=%s&to=%s&amount=%.2f", fromCurr, toCurr, value);
+                        }
 
-                    if (monthCheckBox.isChecked()){
-                        Calendar calendar = Calendar.getInstance();
-                        Date todayDate = calendar.getTime();
-                        calendar.add(Calendar.MONTH, -1);
-                        Date oneMonthAgoDate = calendar.getTime();
-                        SimpleDateFormat format = new SimpleDateFormat("yyyy-MM-dd");
-                        String today = format.format(todayDate);
-                        String oneMonthAgo = format.format(oneMonthAgoDate);
-                        url = String.format("https://api.exchangerate.host/timeseries?start_date=%s&end_date=%s&base=%s&symbols=%s&amount=%.2f", oneMonthAgo, today, fromCurr, toCurr, value);
-                    } else {
-                        url = String.format("https://api.exchangerate.host/convert?from=%s&to=%s&amount=%.2f", fromCurr, toCurr, value);
-                    }
+                        Request request = new Request.Builder()
+                                .url(url)
+                                .get()
+                                .build();
+                        Response response = client.newCall(request).execute();
+                        String responseString = response.body().string();
+                        JSONObject json = new JSONObject(responseString);
 
-                    Request request = new Request.Builder()
-                            .url(url)
-                            .get()
-                            .build();
-                    Response response = client.newCall(request).execute();
-                    String responseString = response.body().string();
-                    JSONObject json = new JSONObject(responseString);
-
-                    // find the monthly average rate and amount
-                    if (monthCheckBox.isChecked()) {
-                        Double sum = 0.0;
-                        int count = 0;
-                        JSONObject jsonRates = json.getJSONObject("rates");
-                        String key;
-                        Double rate = 0.0;
-                        for (Iterator<String> it = jsonRates.keys(); it.hasNext(); ) {
-                            key = it.next();
-                            rate = jsonObjectToDouble(jsonRates.getJSONObject(key), toCurr);
-                            if (rate != null) {
-                                sum += rate;
-                                count++;
+                        // find the monthly average rate and amount
+                        if (monthCheckBox.isChecked()) {
+                            Double sum = 0.0;
+                            int count = 0;
+                            JSONObject jsonRates = json.getJSONObject("rates");
+                            String key;
+                            Double rate = 0.0;
+                            for (Iterator<String> it = jsonRates.keys(); it.hasNext(); ) {
+                                key = it.next();
+                                rate = jsonObjectToDouble(jsonRates.getJSONObject(key), toCurr);
+                                if (rate != null) {
+                                    sum += rate;
+                                    count++;
+                                }
+                            }
+                            if (count != 0) {
+                                value = (sum / count);
+                            } else {
+                                value = 0;
+                            }
+                            // find today's rate and amount
+                        } else {
+                            Double result = jsonObjectToDouble(json, "result");
+                            if (result == null) {
+                                value = 0;
+                            } else {
+                                value = result;
                             }
                         }
-                        if (count != 0) {
-                            value = (sum / count);
-                        } else {
-                            value = 0;
-                        }
-                    // find today's rate and amount
-                    } else {
-                        Double rate = jsonObjectToDouble(json, "result");
-                        if (rate == null) {
-                            value = 0;
-                        } else {
-                            value = rate;
-                        }
+                    } catch (UnknownHostException e) {
+                        Toast.makeText(MainActivity.this, R.string.no_wifi_message, Toast.LENGTH_SHORT).show();
+                        resultTextView.setText("");
+                        return;
+                    } catch (Exception e) {
+                        Toast.makeText(MainActivity.this, e.toString(), Toast.LENGTH_SHORT).show();
+                        return;
                     }
-                } catch (UnknownHostException e) {
-                    Toast.makeText(MainActivity.this, R.string.no_wifi_message, Toast.LENGTH_SHORT).show();
-                    resultTextView.setText("");
-                    return;
-                } catch (Exception e) {
-                    Toast.makeText(MainActivity.this, e.toString(), Toast.LENGTH_SHORT).show();
-                    return;
                 }
 
                 // add % fee

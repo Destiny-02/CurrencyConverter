@@ -68,6 +68,8 @@ public class MainActivity extends AppCompatActivity {
         customRateEditText = findViewById(R.id.custom_rate_edit_text);
         setSpinners();
         setFee();
+        setCustomRate();
+        customRateEditText.setVisibility(View.INVISIBLE);
 
         customRateSwitch.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
             @Override
@@ -105,7 +107,9 @@ public class MainActivity extends AppCompatActivity {
 
                 // handle custom conversion
                 if (customRateSwitch.isChecked()) {
-                    value *= Double.parseDouble(customRateEditText.getText().toString());
+                    String rateString = customRateEditText.getText().toString();
+                    if (rateString.equals("")) rateString = "0";
+                    value *= Double.parseDouble(rateString);
                 } else {
                     // convert to desired currency
                     String fromCurr = fromSpinner.getSelectedItem().toString();
@@ -186,6 +190,14 @@ public class MainActivity extends AppCompatActivity {
 
                     double feePercent = Double.parseDouble(feeString);
                     value *= (1+feePercent/100);
+                }
+
+                // save custom rate
+                if (customRateSwitch.isChecked()) {
+                    SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(customRateSwitch.getContext());
+                    SharedPreferences.Editor editor = prefs.edit();
+                    editor.putString("com.desti.currencyconverter.customrate", customRateEditText.getText().toString());
+                    editor.apply();
                 }
 
                 // format and display
@@ -350,5 +362,10 @@ public class MainActivity extends AppCompatActivity {
     private void setFee() {
         SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(this);
         feeEditText.setText(prefs.getString("com.desti.currencyconverter.fee", "0"));
+    }
+
+    private void setCustomRate() {
+        SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(this);
+        customRateEditText.setText(prefs.getString("com.desti.currencyconverter.customrate", ""));
     }
 }

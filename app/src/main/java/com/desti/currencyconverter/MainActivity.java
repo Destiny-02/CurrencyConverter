@@ -219,7 +219,8 @@ public class MainActivity extends AppCompatActivity {
 
     private void setSpinners() {
         setDropdownOptions();
-        if (checkEmptyDropdownOptions()) return;
+
+        checkEmptyDropdownOptions();
 
         // set spinner adapters
         ArrayAdapter<String> fromAdapter = new ArrayAdapter<String>(this, android.R.layout.simple_spinner_item, dropdownOptions);
@@ -268,6 +269,8 @@ public class MainActivity extends AppCompatActivity {
         SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(this);
         String fromPref = prefs.getString("com.desti.currencyconverter.from", "empty");
         String toPref = prefs.getString("com.desti.currencyconverter.to", "empty");
+
+        if (dropdownOptions.length == 0) return;
 
         // no preferences --> defaults to pos 0 and pos 1 respectively
         if (dropdownOptions.length > 1 && (fromPref.equals("empty") && toPref.equals("empty"))) {

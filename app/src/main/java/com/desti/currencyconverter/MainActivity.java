@@ -63,10 +63,12 @@ public class MainActivity extends AppCompatActivity {
                     currencyLayout.setVisibility(View.INVISIBLE);
                     customRateEditText.setVisibility(View.VISIBLE);
                     monthCheckBox.setVisibility(View.INVISIBLE);
+                    convertButton.setEnabled(true);
                 } else {
                     currencyLayout.setVisibility(View.VISIBLE);
                     customRateEditText.setVisibility(View.INVISIBLE);
                     monthCheckBox.setVisibility(View.VISIBLE);
+                    convertButton.setEnabled(!checkEmptyDropdownOptions());
                 }
             }
         });
@@ -220,7 +222,7 @@ public class MainActivity extends AppCompatActivity {
     private void setSpinners() {
         setDropdownOptions();
 
-        checkEmptyDropdownOptions();
+        convertButton.setEnabled(!checkEmptyDropdownOptions());
 
         // set spinner adapters
         ArrayAdapter<String> fromAdapter = new ArrayAdapter<String>(this, android.R.layout.simple_spinner_item, dropdownOptions);
@@ -256,10 +258,8 @@ public class MainActivity extends AppCompatActivity {
     private boolean checkEmptyDropdownOptions() {
         if (dropdownOptions.length == 0) {
             Toast.makeText(MainActivity.this, R.string.no_options, Toast.LENGTH_LONG).show();
-            convertButton.setEnabled(false);
             return true;
         }   else {
-            convertButton.setEnabled(true);
             return false;
         }
     }

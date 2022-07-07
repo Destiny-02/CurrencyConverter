@@ -58,6 +58,7 @@ public class MainActivity extends AppCompatActivity {
         convertButton = findViewById(R.id.convert_button);
         resultTextView = findViewById(R.id.result_text_view);
         setSpinners();
+        setFee();
 
         feeCheckBox.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
             @Override
@@ -146,6 +147,12 @@ public class MainActivity extends AppCompatActivity {
                 if (feeCheckBox.isChecked()) {
                     String feeString = feeEditText.getText().toString();
                     if (feeString.equals("")) feeString = "0";
+
+                    SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(feeEditText.getContext());
+                    SharedPreferences.Editor editor = prefs.edit();
+                    editor.putString("com.desti.currencyconverter.fee", feeString);
+                    editor.apply();
+
                     double feePercent = Double.parseDouble(feeString);
                     value *= (1+feePercent/100);
                 }
@@ -307,5 +314,10 @@ public class MainActivity extends AppCompatActivity {
         valueEditText.setText("");
         resultTextView.setText("");
         feeCheckBox.setChecked(false);
+    }
+
+    private void setFee() {
+        SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(this);
+        feeEditText.setText(prefs.getString("com.desti.currencyconverter.fee", "0"));
     }
 }

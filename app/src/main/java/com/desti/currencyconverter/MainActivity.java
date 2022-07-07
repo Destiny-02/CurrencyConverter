@@ -37,15 +37,13 @@ import okhttp3.*;
 
 public class MainActivity extends AppCompatActivity {
     private Spinner fromSpinner, toSpinner;
-    private EditText valueEditText, feeEditText;
-    private CheckBox feeCheckBox;
-    private CheckBox monthCheckBox;
+    private EditText valueEditText, feeEditText, customRateEditText;
+    private CheckBox feeCheckBox, monthCheckBox;
     private Button convertButton;
     private TextView resultTextView;
     private Switch customRateSwitch;
-    private String[] dropdownOptions;
     private LinearLayout currencyLayout;
-    private EditText customRateEditText;
+    private String[] dropdownOptions;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -55,21 +53,8 @@ public class MainActivity extends AppCompatActivity {
         StrictMode.ThreadPolicy policy = new StrictMode.ThreadPolicy.Builder().permitAll().build();
         StrictMode.setThreadPolicy(policy);
 
-        fromSpinner = findViewById(R.id.from_spinner);
-        toSpinner = findViewById(R.id.to_spinner);
-        valueEditText = findViewById(R.id.value_edit_text);
-        feeEditText = findViewById(R.id.fee_text_view);
-        feeCheckBox = findViewById(R.id.fee_checkbox);
-        monthCheckBox = findViewById(R.id.month_checkbox);
-        convertButton = findViewById(R.id.convert_button);
-        resultTextView = findViewById(R.id.result_text_view);
-        customRateSwitch = findViewById(R.id.custom_rate_switch);
-        currencyLayout = findViewById(R.id.currency_layout);
-        customRateEditText = findViewById(R.id.custom_rate_edit_text);
-        setSpinners();
-        setFee();
-        setCustomRate();
-        customRateEditText.setVisibility(View.INVISIBLE);
+        findWidgets();
+        setWidgets();
 
         customRateSwitch.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
             @Override
@@ -97,6 +82,7 @@ public class MainActivity extends AppCompatActivity {
             }
         });
 
+        // TODO: refactor
         convertButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
@@ -269,6 +255,28 @@ public class MainActivity extends AppCompatActivity {
         }
     }
 
+    private void findWidgets() {
+        fromSpinner = findViewById(R.id.from_spinner);
+        toSpinner = findViewById(R.id.to_spinner);
+        valueEditText = findViewById(R.id.value_edit_text);
+        feeEditText = findViewById(R.id.fee_text_view);
+        customRateEditText = findViewById(R.id.custom_rate_edit_text);
+        feeCheckBox = findViewById(R.id.fee_checkbox);
+        monthCheckBox = findViewById(R.id.month_checkbox);
+        convertButton = findViewById(R.id.convert_button);
+        resultTextView = findViewById(R.id.result_text_view);
+        customRateSwitch = findViewById(R.id.custom_rate_switch);
+        currencyLayout = findViewById(R.id.currency_layout);
+    }
+
+    private void setWidgets() {
+        setSpinners();
+        setFee();
+        setCustomRate();
+        customRateEditText.setVisibility(View.INVISIBLE);
+    }
+
+    // TODO: refactor
     private void setSpinners() {
         SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(this);
         String prefsString = prefs.getString("com.desti.currencyconverter.dropdownoptions", "empty");
@@ -318,6 +326,22 @@ public class MainActivity extends AppCompatActivity {
         }
     }
 
+    private void setFee() {
+        SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(this);
+        feeEditText.setText(prefs.getString("com.desti.currencyconverter.fee", "0"));
+    }
+
+    private void setCustomRate() {
+        SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(this);
+        customRateEditText.setText(prefs.getString("com.desti.currencyconverter.customrate", ""));
+    }
+
+    private void reset() {
+        valueEditText.setText("");
+        resultTextView.setText("");
+        feeCheckBox.setChecked(false);
+    }
+
     public String[] stringToArray(String s) {
         if (s.equals("")) return new String[]{};
         return s.split(",");
@@ -351,21 +375,5 @@ public class MainActivity extends AppCompatActivity {
             Toast.makeText(MainActivity.this, e.toString(), Toast.LENGTH_SHORT).show();
             return null;
         }
-    }
-
-    private void reset() {
-        valueEditText.setText("");
-        resultTextView.setText("");
-        feeCheckBox.setChecked(false);
-    }
-
-    private void setFee() {
-        SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(this);
-        feeEditText.setText(prefs.getString("com.desti.currencyconverter.fee", "0"));
-    }
-
-    private void setCustomRate() {
-        SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(this);
-        customRateEditText.setText(prefs.getString("com.desti.currencyconverter.customrate", ""));
     }
 }

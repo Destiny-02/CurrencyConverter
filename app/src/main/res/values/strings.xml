@@ -5,6 +5,7 @@
     <string name="month_checkbox">Use monthly average</string>
     <string name="convert_button">Convert</string>
     <string name="no_options">Please add currencies to the dropdown using the "Customise Currencies" option</string>
+    <string name="no_wifi_message">Offline</string>
 
     <string-array name="default_currencies">
         <item>NZD</item>

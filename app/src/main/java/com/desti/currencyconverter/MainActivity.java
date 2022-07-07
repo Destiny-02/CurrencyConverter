@@ -23,6 +23,7 @@ import android.widget.Toast;
 import org.json.JSONException;
 import org.json.JSONObject;
 
+import java.net.UnknownHostException;
 import java.text.SimpleDateFormat;
 import java.util.Arrays;
 import java.util.Calendar;
@@ -137,7 +138,8 @@ public class MainActivity extends AppCompatActivity {
                             value = rate;
                         }
                     }
-
+                } catch (UnknownHostException e) {
+                    Toast.makeText(MainActivity.this, R.string.no_wifi_message, Toast.LENGTH_SHORT).show();
                 } catch (Exception e) {
                     Toast.makeText(MainActivity.this, e.toString(), Toast.LENGTH_SHORT).show();
                     return;

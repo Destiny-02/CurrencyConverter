@@ -16,6 +16,7 @@ import androidx.recyclerview.widget.RecyclerView;
 
 import org.json.JSONObject;
 
+import java.net.UnknownHostException;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Iterator;
@@ -77,6 +78,9 @@ public class CustomiseActivity extends AppCompatActivity {
                 }
                 currencyModelList.add(new CurrencyModel(key, description, isChecked));
             }
+        } catch (UnknownHostException e) {
+            Toast.makeText(CustomiseActivity.this, R.string.no_wifi_message, Toast.LENGTH_SHORT).show();
+            finish();
         } catch (Exception e) {
             Toast.makeText(CustomiseActivity.this, e.toString(), Toast.LENGTH_SHORT).show();
             return;

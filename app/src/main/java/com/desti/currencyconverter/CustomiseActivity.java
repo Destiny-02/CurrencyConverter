@@ -5,7 +5,6 @@ import android.os.Bundle;
 import android.preference.PreferenceManager;
 import android.view.Menu;
 import android.view.MenuItem;
-import android.view.View;
 import android.widget.SearchView;
 import android.widget.Toast;
 
@@ -27,7 +26,7 @@ import okhttp3.Request;
 import okhttp3.Response;
 
 public class CustomiseActivity extends AppCompatActivity {
-    private RecyclerView recyclerView;
+    private RecyclerView currencyRecyclerView;
     private CurrencyListAdapter currencyListAdapter;
     private List<CurrencyModel> currencyModelList;
     private List<String> dropdownOptions;
@@ -36,23 +35,18 @@ public class CustomiseActivity extends AppCompatActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         Bundle extras = getIntent().getExtras();
-        if (extras != null) {
-            dropdownOptions = Arrays.asList(extras.getStringArray("dropdown"));
-        } else {
-            dropdownOptions = new ArrayList<>();
-        }
+        setDropdownOptions(extras);
         initCurrencyList();
 
         setContentView(R.layout.activity_customise);
         getSupportActionBar().setDisplayHomeAsUpEnabled(true);
         getSupportActionBar().setDisplayShowHomeEnabled(true);
 
-        View v = findViewById(android.R.id.content).getRootView();
-        recyclerView = v.findViewById(R.id.currency_recycler_view);
+        currencyRecyclerView = findViewById(R.id.currency_recycler_view);
         currencyListAdapter = new CurrencyListAdapter(currencyModelList);
-        recyclerView.setAdapter(currencyListAdapter);
-        recyclerView.setLayoutManager(new LinearLayoutManager(this));
-        recyclerView.addItemDecoration(new DividerItemDecoration(this,
+        currencyRecyclerView.setAdapter(currencyListAdapter);
+        currencyRecyclerView.setLayoutManager(new LinearLayoutManager(this));
+        currencyRecyclerView.addItemDecoration(new DividerItemDecoration(this,
                 DividerItemDecoration.VERTICAL));
     }
 
@@ -92,32 +86,10 @@ public class CustomiseActivity extends AppCompatActivity {
         onBackPressed();
         return true;
     }
-
-    public String[] currencyModelsToStrings(List<CurrencyModel> currencyModels) {
-        List<String> currencyStringList = new ArrayList<>();
-        for (CurrencyModel cm : currencyModels) {
-            if (cm.isChecked()) {
-                currencyStringList.add(cm.getCurrency());
-            }
-        }
-
-        String[] currencyStrings = currencyStringList.toArray(new String[currencyStringList.size()]);
-        return currencyStrings;
-    }
-
     @Override
     public void onBackPressed() {
         savePreferences();
         super.onBackPressed();
-    }
-
-    private void savePreferences() {
-        String[] selectedStringArray = currencyModelsToStrings(currencyModelList);
-        String selectedStrings = MainActivity.arrayToString(selectedStringArray);
-        SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(this);
-        SharedPreferences.Editor editor = prefs.edit();
-        editor.putString("com.desti.currencyconverter.dropdownoptions", selectedStrings);
-        editor.apply();
     }
 
     @Override
@@ -152,6 +124,14 @@ public class CustomiseActivity extends AppCompatActivity {
         }
     }
 
+    private void setDropdownOptions(Bundle extras) {
+        if (extras != null) {
+            dropdownOptions = Arrays.asList(extras.getStringArray("dropdown"));
+        } else {
+            dropdownOptions = new ArrayList<>();
+        }
+    }
+
     public void deselectAll() {
         for (int i=0; i<currencyModelList.size(); i++) {
             if (currencyModelList.get(i).isChecked()) {
@@ -161,5 +141,26 @@ public class CustomiseActivity extends AppCompatActivity {
             }
         }
         currencyListAdapter.notifyDataSetChanged();
+    }
+
+    private void savePreferences() {
+        String[] selectedStringArray = currencyModelsToStrings(currencyModelList);
+        String selectedStrings = MainActivity.arrayToString(selectedStringArray);
+        SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(this);
+        SharedPreferences.Editor editor = prefs.edit();
+        editor.putString("com.desti.currencyconverter.dropdownoptions", selectedStrings);
+        editor.apply();
+    }
+
+    private String[] currencyModelsToStrings(List<CurrencyModel> currencyModels) {
+        List<String> currencyStringList = new ArrayList<>();
+        for (CurrencyModel cm : currencyModels) {
+            if (cm.isChecked()) {
+                currencyStringList.add(cm.getCurrency());
+            }
+        }
+
+        String[] currencyStrings = currencyStringList.toArray(new String[currencyStringList.size()]);
+        return currencyStrings;
     }
 }

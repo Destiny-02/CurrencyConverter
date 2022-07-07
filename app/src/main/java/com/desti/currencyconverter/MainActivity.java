@@ -276,8 +276,32 @@ public class MainActivity extends AppCompatActivity {
         customRateEditText.setVisibility(View.INVISIBLE);
     }
 
-    // TODO: refactor
     private void setSpinners() {
+        setDropdownOptions();
+        if (checkEmptyDropdownOptions()) return;
+
+        // set spinner adapters
+        ArrayAdapter<String> fromAdapter = new ArrayAdapter<String>(this, android.R.layout.simple_spinner_item, dropdownOptions);
+        fromAdapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
+        fromSpinner.setAdapter(fromAdapter);
+        ArrayAdapter<String> toAdapter = new ArrayAdapter<String>(this, android.R.layout.simple_spinner_item, dropdownOptions);
+        toAdapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
+        toSpinner.setAdapter(toAdapter);
+
+        setDropdownPreferences();
+    }
+
+    private void setFee() {
+        SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(this);
+        feeEditText.setText(prefs.getString("com.desti.currencyconverter.fee", "0"));
+    }
+
+    private void setCustomRate() {
+        SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(this);
+        customRateEditText.setText(prefs.getString("com.desti.currencyconverter.customrate", ""));
+    }
+
+    private void setDropdownOptions() {
         SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(this);
         String prefsString = prefs.getString("com.desti.currencyconverter.dropdownoptions", "empty");
         if (prefsString.equals("empty")) {
@@ -285,26 +309,26 @@ public class MainActivity extends AppCompatActivity {
         } else {
             dropdownOptions = stringToArray(prefsString);
         }
+    }
 
-        ArrayAdapter<String> fromAdapter = new ArrayAdapter<String>(this, android.R.layout.simple_spinner_item, dropdownOptions);
-        fromAdapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
-        fromSpinner.setAdapter(fromAdapter);
-
-        ArrayAdapter<String> toAdapter = new ArrayAdapter<String>(this, android.R.layout.simple_spinner_item, dropdownOptions);
-        toAdapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
-        toSpinner.setAdapter(toAdapter);
-
-        String fromPref = prefs.getString("com.desti.currencyconverter.from", "empty");
-        String toPref = prefs.getString("com.desti.currencyconverter.to", "empty");
-
+    private boolean checkEmptyDropdownOptions() {
         if (dropdownOptions.length == 0) {
             Toast.makeText(MainActivity.this, R.string.no_options, Toast.LENGTH_LONG).show();
             convertButton.setEnabled(false);
-            return;
+            return true;
         }   else {
             convertButton.setEnabled(true);
+            return false;
         }
+    }
 
+    private void setDropdownPreferences() {
+        // get spinner default selected preferences
+        SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(this);
+        String fromPref = prefs.getString("com.desti.currencyconverter.from", "empty");
+        String toPref = prefs.getString("com.desti.currencyconverter.to", "empty");
+
+        // no preferences --> defaults to pos 0 and pos 1 respectively
         if (dropdownOptions.length > 1 && (fromPref.equals("empty") && toPref.equals("empty"))) {
             toSpinner.setSelection(1);
         } else {
@@ -312,6 +336,7 @@ public class MainActivity extends AppCompatActivity {
             int fromIndex = dropdownList.lastIndexOf(fromPref);
             int toIndex = dropdownList.lastIndexOf(toPref);
 
+            // set spinner positions if possible, otherwise, defaults to pos 0
             if ( fromIndex != -1) {
                 fromSpinner.setSelection(fromIndex);
             } else {
@@ -326,23 +351,13 @@ public class MainActivity extends AppCompatActivity {
         }
     }
 
-    private void setFee() {
-        SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(this);
-        feeEditText.setText(prefs.getString("com.desti.currencyconverter.fee", "0"));
-    }
-
-    private void setCustomRate() {
-        SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(this);
-        customRateEditText.setText(prefs.getString("com.desti.currencyconverter.customrate", ""));
-    }
-
     private void reset() {
         valueEditText.setText("");
         resultTextView.setText("");
         feeCheckBox.setChecked(false);
     }
 
-    public String[] stringToArray(String s) {
+    private String[] stringToArray(String s) {
         if (s.equals("")) return new String[]{};
         return s.split(",");
     }

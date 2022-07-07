@@ -20,6 +20,7 @@ import android.widget.Spinner;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import org.json.JSONException;
 import org.json.JSONObject;
 
 import java.text.SimpleDateFormat;
@@ -115,9 +116,9 @@ public class MainActivity extends AppCompatActivity {
                         Double rate = 0.0;
                         for (Iterator<String> it = jsonRates.keys(); it.hasNext(); ) {
                             key = it.next();
-                            if (jsonRates.getJSONObject(key).has(toCurr) && jsonRates.getJSONObject(key).get(toCurr) != JSONObject.NULL) {
-                                rate = (Double) jsonRates.getJSONObject(key).get(toCurr);
-                                sum += (Double) rate;
+                            rate = jsonObjectToDouble(jsonRates.getJSONObject(key), toCurr);
+                            if (rate != null) {
+                                sum += rate;
                                 count++;
                             }
                         }
@@ -128,11 +129,11 @@ public class MainActivity extends AppCompatActivity {
                         }
                     // find today's rate and amount
                     } else {
-                        Object rate = json.get("result");
-                        if (JSONObject.NULL.equals(rate)) {
+                        Double rate = jsonObjectToDouble(json, "result");
+                        if (rate == null) {
                             value = 0;
                         } else {
-                            value = (double) rate;
+                            value = rate;
                         }
                     }
 
@@ -213,6 +214,7 @@ public class MainActivity extends AppCompatActivity {
         super.onActivityResult(requestCode, resultCode, data);
         // TODO: fix resultCode != RESULT_OK (0)
         if (requestCode == 1) {
+            reset();
             setSpinners();
         }
     }
@@ -237,6 +239,14 @@ public class MainActivity extends AppCompatActivity {
         String fromPref = prefs.getString("com.desti.currencyconverter.from", "empty");
         String toPref = prefs.getString("com.desti.currencyconverter.to", "empty");
 
+        if (dropdownOptions.length == 0) {
+            Toast.makeText(MainActivity.this, R.string.no_options, Toast.LENGTH_LONG).show();
+            convertButton.setEnabled(false);
+            return;
+        }   else {
+            convertButton.setEnabled(true);
+        }
+
         if (dropdownOptions.length > 1 && (fromPref.equals("empty") && toPref.equals("empty"))) {
             toSpinner.setSelection(1);
         } else {
@@ -259,6 +269,7 @@ public class MainActivity extends AppCompatActivity {
     }
 
     public String[] stringToArray(String s) {
+        if (s.equals("")) return new String[]{};
         return s.split(",");
     }
 
@@ -268,5 +279,33 @@ public class MainActivity extends AppCompatActivity {
             sb.append(sa[i]).append(",");
         }
         return sb.toString();
+    }
+
+    private Double jsonObjectToDouble(JSONObject obj, String key) {
+        try {
+            if (obj.has(key) && obj.get(key) != JSONObject.NULL) {
+                Object rate = obj.get(key);
+                Double rateDouble;
+
+                if (rate instanceof Integer) {
+                    rateDouble = (double) ((Integer) rate);
+                } else {
+                    rateDouble = (double) rate;
+                }
+
+                return rateDouble;
+            } else {
+                return null;
+            }
+        } catch (JSONException e) {
+            Toast.makeText(MainActivity.this, e.toString(), Toast.LENGTH_SHORT).show();
+            return null;
+        }
+    }
+
+    private void reset() {
+        valueEditText.setText("");
+        resultTextView.setText("");
+        feeCheckBox.setChecked(false);
     }
 }

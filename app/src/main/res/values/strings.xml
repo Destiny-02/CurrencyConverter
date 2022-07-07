@@ -4,6 +4,7 @@
     <string name="fee_checkbox">Add % fee</string>
     <string name="month_checkbox">Use monthly average</string>
     <string name="convert_button">Convert</string>
+    <string name="no_options">Please add currencies to the dropdown using the "Customise Currencies" option</string>
 
     <string-array name="default_currencies">
         <item>NZD</item>

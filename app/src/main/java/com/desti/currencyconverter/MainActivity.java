@@ -82,41 +82,23 @@ public class MainActivity extends AppCompatActivity {
             }
         });
 
-        // TODO: refactor
         convertButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                // collect value to be converted
-                String valueString = valueEditText.getText().toString();
-                if (valueString.equals("")) valueString = "0";
-                double value = Double.parseDouble(valueString);
+                double value = getValue();
 
                 // handle custom conversion
                 if (customRateSwitch.isChecked()) {
                     String rateString = customRateEditText.getText().toString();
                     if (rateString.equals("")) rateString = "0";
                     value *= Double.parseDouble(rateString);
+                    saveCustomRatePreferences(rateString);
                 } else {
                     // convert to desired currency
-                    String fromCurr = fromSpinner.getSelectedItem().toString();
-                    String toCurr = toSpinner.getSelectedItem().toString();
                     try {
+                        // conduct request
                         OkHttpClient client = new OkHttpClient().newBuilder().build();
-                        String url;
-
-                        if (monthCheckBox.isChecked()){
-                            Calendar calendar = Calendar.getInstance();
-                            Date todayDate = calendar.getTime();
-                            calendar.add(Calendar.MONTH, -1);
-                            Date oneMonthAgoDate = calendar.getTime();
-                            SimpleDateFormat format = new SimpleDateFormat("yyyy-MM-dd");
-                            String today = format.format(todayDate);
-                            String oneMonthAgo = format.format(oneMonthAgoDate);
-                            url = String.format("https://api.exchangerate.host/timeseries?start_date=%s&end_date=%s&base=%s&symbols=%s&amount=%.2f", oneMonthAgo, today, fromCurr, toCurr, value);
-                        } else {
-                            url = String.format("https://api.exchangerate.host/convert?from=%s&to=%s&amount=%.2f", fromCurr, toCurr, value);
-                        }
-
+                        String url = buildConversionUrl(value);
                         Request request = new Request.Builder()
                                 .url(url)
                                 .get()
@@ -125,27 +107,8 @@ public class MainActivity extends AppCompatActivity {
                         String responseString = response.body().string();
                         JSONObject json = new JSONObject(responseString);
 
-                        // find the monthly average rate and amount
                         if (monthCheckBox.isChecked()) {
-                            Double sum = 0.0;
-                            int count = 0;
-                            JSONObject jsonRates = json.getJSONObject("rates");
-                            String key;
-                            Double rate = 0.0;
-                            for (Iterator<String> it = jsonRates.keys(); it.hasNext(); ) {
-                                key = it.next();
-                                rate = jsonObjectToDouble(jsonRates.getJSONObject(key), toCurr);
-                                if (rate != null) {
-                                    sum += rate;
-                                    count++;
-                                }
-                            }
-                            if (count != 0) {
-                                value = (sum / count);
-                            } else {
-                                value = 0;
-                            }
-                            // find today's rate and amount
+                            value = getMonthlyAverage(json);
                         } else {
                             Double result = jsonObjectToDouble(json, "result");
                             if (result == null) {
@@ -164,33 +127,11 @@ public class MainActivity extends AppCompatActivity {
                     }
                 }
 
-                // add % fee
-                if (feeCheckBox.isChecked()) {
-                    String feeString = feeEditText.getText().toString();
-                    if (feeString.equals("")) feeString = "0";
-
-                    SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(feeEditText.getContext());
-                    SharedPreferences.Editor editor = prefs.edit();
-                    editor.putString("com.desti.currencyconverter.fee", feeString);
-                    editor.apply();
-
-                    double feePercent = Double.parseDouble(feeString);
-                    value *= (1+feePercent/100);
-                }
-
-                // save custom rate
-                if (customRateSwitch.isChecked()) {
-                    SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(customRateSwitch.getContext());
-                    SharedPreferences.Editor editor = prefs.edit();
-                    editor.putString("com.desti.currencyconverter.customrate", customRateEditText.getText().toString());
-                    editor.apply();
-                }
+                if (feeCheckBox.isChecked()) value = addFee(value);
 
                 // format and display
                 value = (double) Math.round(value*100)/100;
-                valueString = Double.toString(value);
-                if (valueString.endsWith(".0")) valueString = valueString.substring(0, valueString.length()-2);
-                resultTextView.setText(valueString);
+                displayResult(value);
             }
         });
 
@@ -349,6 +290,85 @@ public class MainActivity extends AppCompatActivity {
                 toSpinner.setSelection(0);
             }
         }
+    }
+
+    private double getValue() {
+        String valueString = valueEditText.getText().toString();
+        if (valueString.equals("")) valueString = "0";
+        return Double.parseDouble(valueString);
+    }
+
+    private String getTodayString() {
+        Calendar calendar = Calendar.getInstance();
+        Date todayDate = calendar.getTime();
+        SimpleDateFormat format = new SimpleDateFormat("yyyy-MM-dd");
+        return format.format(todayDate);
+    }
+
+    private String getOneMonthAgoDateString() {
+        Calendar calendar = Calendar.getInstance();
+        calendar.add(Calendar.MONTH, -1);
+        Date oneMonthAgoDate = calendar.getTime();
+        SimpleDateFormat format = new SimpleDateFormat("yyyy-MM-dd");
+        return format.format(oneMonthAgoDate);
+    }
+
+    private String buildConversionUrl(double value) {
+        String fromCurr = fromSpinner.getSelectedItem().toString();
+        String toCurr = toSpinner.getSelectedItem().toString();
+        if (monthCheckBox.isChecked()){
+            return String.format("https://api.exchangerate.host/timeseries?start_date=%s&end_date=%s&base=%s&symbols=%s&amount=%.2f", getOneMonthAgoDateString(), getTodayString(), fromCurr, toCurr, value);
+        } else {
+            return String.format("https://api.exchangerate.host/convert?from=%s&to=%s&amount=%.2f", fromCurr, toCurr, value);
+        }
+    }
+
+    private double getMonthlyAverage(JSONObject json) throws Exception {
+        Double sum = 0.0;
+        int count = 0;
+        JSONObject jsonRates = json.getJSONObject("rates");
+        String key;
+        Double amount = 0.0;
+        for (Iterator<String> it = jsonRates.keys(); it.hasNext(); ) {
+            key = it.next();
+            amount = jsonObjectToDouble(jsonRates.getJSONObject(key), toSpinner.getSelectedItem().toString());
+            if (amount != null) {
+                sum += amount;
+                count++;
+            }
+        }
+        if (count != 0) {
+            return sum / count;
+        } else {
+            return 0;
+        }
+    }
+
+    private double addFee(double value) {
+        String feeString = feeEditText.getText().toString();
+        if (feeString.equals("")) feeString = "0";
+
+        SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(feeEditText.getContext());
+        SharedPreferences.Editor editor = prefs.edit();
+        editor.putString("com.desti.currencyconverter.fee", feeString);
+        editor.apply();
+
+        double feePercent = Double.parseDouble(feeString);
+        value *= (1+feePercent/100);
+        return value;
+    }
+
+    private void saveCustomRatePreferences(String rateString) {
+        SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(customRateSwitch.getContext());
+        SharedPreferences.Editor editor = prefs.edit();
+        editor.putString("com.desti.currencyconverter.customrate", rateString);
+        editor.apply();
+    }
+
+    private void displayResult(double value) {
+        String valueString = Double.toString(value);
+        if (valueString.endsWith(".0")) valueString = valueString.substring(0, valueString.length()-2);
+        resultTextView.setText(valueString);
     }
 
     private void reset() {

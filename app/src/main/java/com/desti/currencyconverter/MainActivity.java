@@ -38,8 +38,8 @@ import okhttp3.*;
 
 public class MainActivity extends AppCompatActivity {
     private Spinner fromSpinner, toSpinner;
-    private EditText valueEditText, feeEditText, customRateEditText;
-    private CheckBox feeCheckBox, monthCheckBox;
+    private EditText valueEditText, addFeeEditText, deductFeeEditText, customRateEditText;
+    private CheckBox addFeeCheckBox, deductFeeCheckbox, monthCheckBox;
     private Button convertButton;
     private TextView resultTextView;
     private CheckBox customRateCheckbox;
@@ -74,13 +74,24 @@ public class MainActivity extends AppCompatActivity {
             }
         });
 
-        feeCheckBox.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
+        addFeeCheckBox.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
             @Override
             public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
                 if (isChecked) {
-                    feeEditText.setVisibility(View.VISIBLE);
+                    addFeeEditText.setVisibility(View.VISIBLE);
                 } else {
-                    feeEditText.setVisibility(View.INVISIBLE);
+                    addFeeEditText.setVisibility(View.INVISIBLE);
+                }
+            }
+        });
+
+        deductFeeCheckbox.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
+            @Override
+            public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
+                if (isChecked) {
+                    deductFeeEditText.setVisibility(View.VISIBLE);
+                } else {
+                    deductFeeEditText.setVisibility(View.INVISIBLE);
                 }
             }
         });
@@ -130,7 +141,8 @@ public class MainActivity extends AppCompatActivity {
                     }
                 }
 
-                if (feeCheckBox.isChecked()) value = addFee(value);
+                if (addFeeCheckBox.isChecked()) value = addFee(value);
+                if (deductFeeCheckbox.isChecked()) value = deductFee(value);
 
                 // format and display
                 value = (double) Math.round(value*100)/100;
@@ -220,9 +232,11 @@ public class MainActivity extends AppCompatActivity {
         fromSpinner = findViewById(R.id.from_spinner);
         toSpinner = findViewById(R.id.to_spinner);
         valueEditText = findViewById(R.id.value_edit_text);
-        feeEditText = findViewById(R.id.fee_text_view);
+        addFeeEditText = findViewById(R.id.add_fee_text_view);
+        deductFeeEditText = findViewById(R.id.deduct_fee_text_view);
         customRateEditText = findViewById(R.id.custom_rate_edit_text);
-        feeCheckBox = findViewById(R.id.fee_checkbox);
+        addFeeCheckBox = findViewById(R.id.add_fee_checkbox);
+        deductFeeCheckbox = findViewById(R.id.deduct_fee_checkbox);
         monthCheckBox = findViewById(R.id.month_checkbox);
         convertButton = findViewById(R.id.convert_button);
         resultTextView = findViewById(R.id.result_text_view);
@@ -257,7 +271,8 @@ public class MainActivity extends AppCompatActivity {
 
     private void setFee() {
         SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(this);
-        feeEditText.setText(prefs.getString("com.desti.currencyconverter.fee", "0"));
+        addFeeEditText.setText(prefs.getString("com.desti.currencyconverter.addfee", "0"));
+        deductFeeEditText.setText(prefs.getString("com.desti.currencyconverter.deductfee", "0"));
     }
 
     private void setCustomRate() {
@@ -368,16 +383,30 @@ public class MainActivity extends AppCompatActivity {
     }
 
     private double addFee(double value) {
-        String feeString = feeEditText.getText().toString();
+        String feeString = addFeeEditText.getText().toString();
         if (feeString.equals("")) feeString = "0";
 
-        SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(feeEditText.getContext());
+        SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(addFeeEditText.getContext());
         SharedPreferences.Editor editor = prefs.edit();
-        editor.putString("com.desti.currencyconverter.fee", feeString);
+        editor.putString("com.desti.currencyconverter.addfee", feeString);
         editor.apply();
 
         double feePercent = Double.parseDouble(feeString);
         value *= (1+feePercent/100);
+        return value;
+    }
+
+    private double deductFee(double value) {
+        String feeString = deductFeeEditText.getText().toString();
+        if (feeString.equals("")) feeString = "0";
+
+        SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(deductFeeEditText.getContext());
+        SharedPreferences.Editor editor = prefs.edit();
+        editor.putString("com.desti.currencyconverter.deductfee", feeString);
+        editor.apply();
+
+        double feePercent = Double.parseDouble(feeString);
+        value *= (1-feePercent/100);
         return value;
     }
 
@@ -398,7 +427,8 @@ public class MainActivity extends AppCompatActivity {
     private void reset() {
         valueEditText.setText("");
         resultTextView.setText("");
-        feeCheckBox.setChecked(false);
+        addFeeCheckBox.setChecked(false);
+        deductFeeCheckbox.setChecked(false);
     }
 
     private String[] stringToArray(String s) {

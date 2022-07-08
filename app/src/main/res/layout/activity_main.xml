@@ -80,19 +80,41 @@
             android:text="@string/month_checkbox" />
 
         <LinearLayout
-            android:id="@+id/fee_layout"
+            android:id="@+id/add_fee_layout"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_marginLeft="16dp">
 
             <CheckBox
-                android:id="@+id/fee_checkbox"
+                android:id="@+id/add_fee_checkbox"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:text="@string/fee_checkbox" />
+                android:text="@string/add_fee_checkbox" />
 
             <EditText
-                android:id="@+id/fee_text_view"
+                android:id="@+id/add_fee_text_view"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginLeft="16dp"
+                android:ems="6"
+                android:inputType="numberDecimal"
+                android:visibility="invisible" />
+        </LinearLayout>
+
+        <LinearLayout
+            android:id="@+id/deduct_fee_layout"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginLeft="16dp">
+
+            <CheckBox
+                android:id="@+id/deduct_fee_checkbox"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="@string/deduct_fee_checkbox" />
+
+            <EditText
+                android:id="@+id/deduct_fee_text_view"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_marginLeft="16dp"

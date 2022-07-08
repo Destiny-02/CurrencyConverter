@@ -222,7 +222,7 @@ public class MainActivity extends AppCompatActivity {
     private void setSpinners() {
         setDropdownOptions();
 
-        convertButton.setEnabled(!checkEmptyDropdownOptions());
+        convertButton.setEnabled(!checkEmptyDropdownOptions() || customRateSwitch.isChecked());
 
         // set spinner adapters
         ArrayAdapter<String> fromAdapter = new ArrayAdapter<String>(this, android.R.layout.simple_spinner_item, dropdownOptions);

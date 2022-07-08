@@ -18,7 +18,6 @@ import android.widget.CompoundButton;
 import android.widget.EditText;
 import android.widget.LinearLayout;
 import android.widget.Spinner;
-import android.widget.Switch;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -41,7 +40,7 @@ public class MainActivity extends AppCompatActivity {
     private CheckBox feeCheckBox, monthCheckBox;
     private Button convertButton;
     private TextView resultTextView;
-    private Switch customRateSwitch;
+    private CheckBox customRateCheckbox;
     private LinearLayout currencyLayout;
     private String[] dropdownOptions;
 
@@ -56,17 +55,17 @@ public class MainActivity extends AppCompatActivity {
         findWidgets();
         setWidgets();
 
-        customRateSwitch.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
+        customRateCheckbox.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
             @Override
             public void onCheckedChanged(CompoundButton compoundButton, boolean isChecked) {
                 if (isChecked) {
-                    currencyLayout.setVisibility(View.INVISIBLE);
+                    currencyLayout.setVisibility(View.GONE);
                     customRateEditText.setVisibility(View.VISIBLE);
-                    monthCheckBox.setVisibility(View.INVISIBLE);
+                    monthCheckBox.setVisibility(View.GONE);
                     convertButton.setEnabled(true);
                 } else {
                     currencyLayout.setVisibility(View.VISIBLE);
-                    customRateEditText.setVisibility(View.INVISIBLE);
+                    customRateEditText.setVisibility(View.GONE);
                     monthCheckBox.setVisibility(View.VISIBLE);
                     convertButton.setEnabled(!checkEmptyDropdownOptions());
                 }
@@ -90,7 +89,7 @@ public class MainActivity extends AppCompatActivity {
                 double value = getValue();
 
                 // handle custom conversion
-                if (customRateSwitch.isChecked()) {
+                if (customRateCheckbox.isChecked()) {
                     String rateString = customRateEditText.getText().toString();
                     if (rateString.equals("")) rateString = "0";
                     value *= Double.parseDouble(rateString);
@@ -208,7 +207,7 @@ public class MainActivity extends AppCompatActivity {
         monthCheckBox = findViewById(R.id.month_checkbox);
         convertButton = findViewById(R.id.convert_button);
         resultTextView = findViewById(R.id.result_text_view);
-        customRateSwitch = findViewById(R.id.custom_rate_switch);
+        customRateCheckbox = findViewById(R.id.custom_rate_checkbox);
         currencyLayout = findViewById(R.id.currency_layout);
     }
 
@@ -216,13 +215,13 @@ public class MainActivity extends AppCompatActivity {
         setSpinners();
         setFee();
         setCustomRate();
-        customRateEditText.setVisibility(View.INVISIBLE);
+        customRateEditText.setVisibility(View.GONE);
     }
 
     private void setSpinners() {
         setDropdownOptions();
 
-        convertButton.setEnabled(!checkEmptyDropdownOptions() || customRateSwitch.isChecked());
+        convertButton.setEnabled(!checkEmptyDropdownOptions() || customRateCheckbox.isChecked());
 
         // set spinner adapters
         ArrayAdapter<String> fromAdapter = new ArrayAdapter<String>(this, android.R.layout.simple_spinner_item, dropdownOptions);
@@ -362,7 +361,7 @@ public class MainActivity extends AppCompatActivity {
     }
 
     private void saveCustomRatePreferences(String rateString) {
-        SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(customRateSwitch.getContext());
+        SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(customRateCheckbox.getContext());
         SharedPreferences.Editor editor = prefs.edit();
         editor.putString("com.desti.currencyconverter.customrate", rateString);
         editor.apply();

@@ -15,10 +15,10 @@ Android app for currency conversion on-the-go. The app was created to help peopl
 
 ## Installation Instructions
 
-1) Download the APK file on your Android device \
+1) Download the APK file onto your Android device \
 https://github.com/Destiny-02/CurrencyConverter/blob/main/currency_converter.apk
 
-2) Enable installations from unknown apps (you might want to disable this again after you've installed the app) 
+2) Enable installations from unknown apps and ignore warnings (you might want to disable this again after you've installed the app) 
 3) Launch app!
 
 ![app screenshot (light mode)](https://github.com/Destiny-02/CurrencyConverter/blob/main/light.png) \

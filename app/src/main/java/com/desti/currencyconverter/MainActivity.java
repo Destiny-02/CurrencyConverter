@@ -143,7 +143,7 @@ public class MainActivity extends AppCompatActivity {
                         }
                     } catch (UnknownHostException e) {
                         Toast.makeText(MainActivity.this, R.string.no_wifi_message, Toast.LENGTH_SHORT).show();
-                        resultTextView.setText("");
+                        resultLayout.setVisibility(View.INVISIBLE);
                         return;
                     } catch (Exception e) {
                         Toast.makeText(MainActivity.this, e.toString(), Toast.LENGTH_SHORT).show();

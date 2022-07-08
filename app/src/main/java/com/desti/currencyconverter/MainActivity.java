@@ -60,6 +60,7 @@ public class MainActivity extends AppCompatActivity {
         customRateCheckbox.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
             @Override
             public void onCheckedChanged(CompoundButton compoundButton, boolean isChecked) {
+                resultLayout.setVisibility(View.INVISIBLE);
                 if (isChecked) {
                     currencyLayout.setVisibility(View.GONE);
                     customRateEditText.setVisibility(View.VISIBLE);
@@ -74,9 +75,17 @@ public class MainActivity extends AppCompatActivity {
             }
         });
 
+        monthCheckBox.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
+            @Override
+            public void onCheckedChanged(CompoundButton compoundButton, boolean isChecked) {
+                resultLayout.setVisibility(View.INVISIBLE);
+            }
+        });
+
         addFeeCheckBox.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
             @Override
-            public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
+            public void onCheckedChanged(CompoundButton compoundButton, boolean isChecked) {
+                resultLayout.setVisibility(View.INVISIBLE);
                 if (isChecked) {
                     addFeeEditText.setVisibility(View.VISIBLE);
                 } else {
@@ -88,6 +97,7 @@ public class MainActivity extends AppCompatActivity {
         deductFeeCheckbox.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
             @Override
             public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
+                resultLayout.setVisibility(View.INVISIBLE);
                 if (isChecked) {
                     deductFeeEditText.setVisibility(View.VISIBLE);
                 } else {
@@ -153,6 +163,7 @@ public class MainActivity extends AppCompatActivity {
         fromSpinner.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
             @Override
             public void onItemSelected(AdapterView<?> adapterView, View view, int i, long l) {
+                resultLayout.setVisibility(View.INVISIBLE);
                 SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(fromSpinner.getContext());
                 SharedPreferences.Editor editor = prefs.edit();
                 editor.putString("com.desti.currencyconverter.from", fromSpinner.getSelectedItem().toString());
@@ -168,6 +179,7 @@ public class MainActivity extends AppCompatActivity {
         toSpinner.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
             @Override
             public void onItemSelected(AdapterView<?> adapterView, View view, int i, long l) {
+                resultLayout.setVisibility(View.INVISIBLE);
                 SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(toSpinner.getContext());
                 SharedPreferences.Editor editor = prefs.edit();
                 editor.putString("com.desti.currencyconverter.to", toSpinner.getSelectedItem().toString());

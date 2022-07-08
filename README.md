@@ -5,7 +5,7 @@ Android app for currency conversion on-the-go. The app was created to help peopl
 ## Features
 - Support for 171 currencies
 - Conversion preferences are saved onto your device - no sign up required!
-- Customise to/from dropdowns with your desired currencies
+- Customise from/to dropdowns with your desired currencies
 - Use a custom rate (available offline)
 - Use the most recent rate or the monthly average rate
 - Add or subtract transaction fees 

@@ -7,6 +7,8 @@ import android.content.SharedPreferences;
 import android.os.Bundle;
 import android.os.StrictMode;
 import android.preference.PreferenceManager;
+import android.text.Editable;
+import android.text.TextWatcher;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
@@ -41,7 +43,7 @@ public class MainActivity extends AppCompatActivity {
     private Button convertButton;
     private TextView resultTextView;
     private CheckBox customRateCheckbox;
-    private LinearLayout currencyLayout;
+    private LinearLayout currencyLayout, resultLayout;
     private String[] dropdownOptions;
 
     @Override
@@ -165,6 +167,23 @@ public class MainActivity extends AppCompatActivity {
 
             }
         });
+
+        valueEditText.addTextChangedListener(new TextWatcher() {
+            @Override
+            public void beforeTextChanged(CharSequence charSequence, int i, int i1, int i2) {
+
+            }
+
+            @Override
+            public void onTextChanged(CharSequence charSequence, int i, int i1, int i2) {
+                resultLayout.setVisibility(View.INVISIBLE);
+            }
+
+            @Override
+            public void afterTextChanged(Editable editable) {
+
+            }
+        });
     }
 
     @Override
@@ -209,6 +228,7 @@ public class MainActivity extends AppCompatActivity {
         resultTextView = findViewById(R.id.result_text_view);
         customRateCheckbox = findViewById(R.id.custom_rate_checkbox);
         currencyLayout = findViewById(R.id.currency_layout);
+        resultLayout =  findViewById(R.id.result_layout);
     }
 
     private void setWidgets() {
@@ -216,6 +236,7 @@ public class MainActivity extends AppCompatActivity {
         setFee();
         setCustomRate();
         customRateEditText.setVisibility(View.GONE);
+        resultLayout.setVisibility(View.INVISIBLE);
     }
 
     private void setSpinners() {
@@ -371,6 +392,7 @@ public class MainActivity extends AppCompatActivity {
         String valueString = Double.toString(value);
         if (valueString.endsWith(".0")) valueString = valueString.substring(0, valueString.length()-2);
         resultTextView.setText(valueString);
+        resultLayout.setVisibility(View.VISIBLE);
     }
 
     private void reset() {

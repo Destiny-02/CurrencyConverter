@@ -438,9 +438,6 @@ public class MainActivity extends AppCompatActivity {
 
     private void reset() {
         valueEditText.setText("");
-        resultTextView.setText("");
-        addFeeCheckBox.setChecked(false);
-        deductFeeCheckbox.setChecked(false);
     }
 
     private String[] stringToArray(String s) {
